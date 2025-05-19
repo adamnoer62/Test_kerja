@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cuti;
 use App\Models\Pegawai;
 use Illuminate\Http\Request;
 
@@ -90,6 +91,12 @@ class PegawaiController extends Controller
     public function destroy(string $id)
     {
         $pegawai = Pegawai::find($id);
+
+
+        if (Cuti::where('pegawai_id', $id)->exists()) {
+            return back()->withErrors(['pegawai_id' => 'Data sedang di pakai di tabel cuti, tidak bisa dihapus!']);
+        }
+
         $pegawai->delete();
 
         return redirect()->route('pegawai.index')->with('success', 'Pegawai deleted successfully');
